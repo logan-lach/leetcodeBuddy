@@ -9,21 +9,21 @@
     "storage"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "js/background.js"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "html/popup.html",
     "default_icon": {
-      "16": "leetcodeBuddy.png",
-      "48": "leetcodeBuddy.png",
-      "128": "leetcodeBuddy.png"
+      "16": "icons/leetcodeBuddy.png",
+      "48": "icons/leetcodeBuddy.png",
+      "128": "icons/leetcodeBuddy.png"
     }
   },
   "content_scripts": [
     {
       "matches": ["https://leetcode.com/*"],
-      "js": ["content.js"],
-      "css": ["modal.css"]
+      "js": ["js/content.js"],
+      "css": ["css/modal.css"]
     }
   ]
 }
