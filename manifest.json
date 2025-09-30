@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "LeetCode Committer",
+  "description": "Capture LeetCode solutions and commit them to a repo.",
+  "version": "0.1",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "leetcodeBuddy.png",
+      "48": "leetcodeBuddy.png",
+      "128": "leetcodeBuddy.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
+
