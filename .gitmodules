@@ -1,6 +1,0 @@
-[submodule "leetcodeBuddyExtension"]
-	path = leetcodeBuddyExtension
-	url = git@github.com:logan-lach/leetcodeBuddyExtension.git
-[submodule "leetcodeBuddyBackend"]
-	path = leetcodeBuddyBackend
-	url = git@github.com:logan-lach/leetcodeBuddyBackend.git

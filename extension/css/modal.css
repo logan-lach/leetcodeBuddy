@@ -1,0 +1,95 @@
+/* Modal overlay styles for LeetCode page injection */
+
+#leetcode-committer-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#leetcode-committer-modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+#leetcode-committer-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+#leetcode-committer-modal-title {
+  margin: 0;
+  color: #2cbb5d;
+  font-size: 24px;
+}
+
+#leetcode-committer-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+}
+
+#leetcode-committer-close:hover {
+  color: #333;
+}
+
+#leetcode-committer-message {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+#leetcode-committer-metadata {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f7f7f7;
+  border-radius: 6px;
+  color: #333;
+}
+
+#leetcode-committer-metadata p {
+  margin: 4px 0;
+  color: #333;
+}
+
+#leetcode-committer-code-section {
+  margin-top: 16px;
+}
+
+#leetcode-committer-code-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+#leetcode-committer-code {
+  background: #f7f7f7;
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  max-height: 300px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  color: #333;
+}

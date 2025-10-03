@@ -1,0 +1,35 @@
+# Future Features & Security Improvements
+
+## Security
+
+### CORS Validation (CRITICAL - Before Public Release)
+**Priority: HIGH**
+**Status: TODO**
+
+Current state: CORS is wide open with `CORS(app)` allowing all origins.
+This is fine for development but MUST be restricted before public release.
+
+Required changes before going public:
+1. Restrict CORS to specific Chrome extension ID
+   - Get extension ID from chrome://extensions
+   - Configure: CORS(app, origins=['chrome-extension://<EXTENSION_ID>'])
+2. Add environment variable for CHROME_EXTENSION_ID
+3. Restrict allowed methods to only ['GET', 'POST', 'OPTIONS']
+4. Restrict allowed headers to only ['Content-Type', 'Authorization']
+5. Explicitly set supports_credentials=False to prevent cookie-based attacks
+6. Consider different configs for dev vs prod environments
+
+Reference implementation:
+```python
+cors_config = {
+    'origins': [f'chrome-extension://{os.getenv("CHROME_EXTENSION_ID")}'],
+    'methods': ['GET', 'POST', 'OPTIONS'],
+    'allow_headers': ['Content-Type', 'Authorization'],
+    'supports_credentials': False
+}
+CORS(app, **cors_config)
+```
+
+## Features
+
+(Add future feature ideas here)
