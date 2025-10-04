@@ -19,9 +19,12 @@ def authorize():
         "user": {...}
     }
     """
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+
     data = request.get_json()
 
-    if not data or 'code' not in data:
+    if not data or not data.get('code'):
         return jsonify({'error': 'Missing authorization code'}), 400
 
     # TODO: Exchange code for access token with GitHub
@@ -58,11 +61,14 @@ def push_solution():
         "commit_url": "https://github.com/..."
     }
     """
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+
     data = request.get_json()
 
     # Validate required fields
     required_fields = ['access_token', 'repo_name', 'problem_title', 'code', 'language']
-    missing_fields = [field for field in required_fields if field not in data]
+    missing_fields = [field for field in required_fields if not data.get(field)]
 
     if missing_fields:
         return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
@@ -132,9 +138,12 @@ def setup_repo():
         "repo_name": "leetcode-solutions"
     }
     """
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+
     data = request.get_json()
 
-    if not data or 'access_token' not in data or 'repo_name' not in data:
+    if not data or not data.get('access_token') or not data.get('repo_name'):
         return jsonify({'error': 'Missing access_token or repo_name'}), 400
 
     # TODO: Create repository using GitHub API
