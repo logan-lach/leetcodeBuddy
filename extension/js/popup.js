@@ -1,7 +1,7 @@
 // Check for stored accepted submission on popup load
-chrome.storage.local.get(['lastAcceptedSubmission'], (result) => {
-  if (result.lastAcceptedSubmission) {
-    const { code, metadata } = result.lastAcceptedSubmission;
+chrome.storage.local.get([STORAGE_KEYS.LAST_ACCEPTED_SUBMISSION], (result) => {
+  if (result[STORAGE_KEYS.LAST_ACCEPTED_SUBMISSION]) {
+    const { code, metadata } = result[STORAGE_KEYS.LAST_ACCEPTED_SUBMISSION];
 
     // Show congratulations message
     document.getElementById("congratsMessage").style.display = "block";
@@ -25,7 +25,7 @@ chrome.storage.local.get(['lastAcceptedSubmission'], (result) => {
 document.getElementById("capture").addEventListener("click", async () => {
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  chrome.tabs.sendMessage(tab.id, { type: "GET_SOLUTION" }, (response) => {
+  chrome.tabs.sendMessage(tab.id, { type: MESSAGE_TYPES.GET_SOLUTION }, (response) => {
     if (response && response.code) {
       document.getElementById("output").innerText = response.code;
     } else {

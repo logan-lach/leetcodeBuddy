@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "LeetCode Committer",
+  "name": "leetcodeBuddy",
   "description": "Capture LeetCode solutions and commit them to a repo.",
   "version": "0.1",
   "permissions": [
@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "matches": ["https://leetcode.com/*"],
-      "js": ["js/content.js"],
+      "js": ["js/constants.js", "js/content.js"],
       "css": ["css/modal.css"]
     }
   ]

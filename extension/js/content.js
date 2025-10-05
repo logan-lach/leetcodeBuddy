@@ -1,6 +1,8 @@
 // Runs on LeetCode pages
 console.log("LeetCode Committer content script loaded!");
 
+// Import constants (loaded via manifest.json)
+
 // Track if we've already processed an acceptance
 let hasProcessedAcceptance = false;
 
@@ -77,7 +79,7 @@ function showAcceptanceModal(code, metadata) {
 // Extract code editor content from Monaco editor
 function captureSolution() {
   // Query for the Monaco editor lines
-  const lineNodes = document.querySelectorAll('.view-lines .view-line');
+  const lineNodes = document.querySelectorAll(LEETCODE_SELECTORS.MONACO_LINES);
 
   if (!lineNodes || lineNodes.length === 0) {
     console.warn("No Monaco lines found");
@@ -94,22 +96,22 @@ function captureSolution() {
 // Extract problem metadata
 function extractMetadata() {
   // Problem title
-  const titleElement = document.querySelector('a[href^="/problems/"]') ||
-                       document.querySelector('[data-cy="question-title"]');
+  const titleElement = document.querySelector(LEETCODE_SELECTORS.TITLE_LINK) ||
+                       document.querySelector(LEETCODE_SELECTORS.TITLE_DATA_ATTR);
   const title = titleElement?.textContent?.trim() || null;
 
   // Problem slug from URL - TODO: fix manually to extract problem number instead
-  const urlMatch = window.location.pathname.match(/\/problems\/([^\/]+)/);
+  const urlMatch = window.location.pathname.match(LEETCODE_SELECTORS.PROBLEM_URL_PATTERN);
   const problemSlug = urlMatch ? urlMatch[1] : null;
 
   // Difficulty - look for badge with text-difficulty-{difficulty} class
-  const difficultyElement = document.querySelector('[class*="text-difficulty-"]');
+  const difficultyElement = document.querySelector(LEETCODE_SELECTORS.DIFFICULTY_BADGE);
   let difficulty = null;
   if (difficultyElement) {
     const classList = Array.from(difficultyElement.classList);
-    const difficultyClass = classList.find(c => c.startsWith('text-difficulty-'));
+    const difficultyClass = classList.find(c => c.startsWith(LEETCODE_SELECTORS.DIFFICULTY_CLASS_PREFIX));
     if (difficultyClass) {
-      difficulty = difficultyClass.replace('text-difficulty-', '');
+      difficulty = difficultyClass.replace(LEETCODE_SELECTORS.DIFFICULTY_CLASS_PREFIX, '');
     }
   }
 
@@ -127,9 +129,9 @@ function checkForAcceptedSubmission() {
     return;
   }
 
-  const submissionResult = document.querySelector('span[data-e2e-locator="submission-result"]');
+  const submissionResult = document.querySelector(LEETCODE_SELECTORS.SUBMISSION_RESULT);
 
-  if (submissionResult && submissionResult.textContent.includes("Accepted")) {
+  if (submissionResult && submissionResult.textContent.includes(LEETCODE_SELECTORS.ACCEPTED_TEXT)) {
     console.log("Accepted submission detected!");
 
     // Mark as processed to prevent duplicate triggers
@@ -144,7 +146,7 @@ function checkForAcceptedSubmission() {
 
       // Store the submission data
       chrome.storage.local.set({
-        lastAcceptedSubmission: {
+        [STORAGE_KEYS.LAST_ACCEPTED_SUBMISSION]: {
           code: code,
           metadata: metadata,
           timestamp: Date.now()
@@ -167,8 +169,8 @@ const observer = new MutationObserver((mutations) => {
       // Check if any added node contains the submission result
       for (const node of mutation.addedNodes) {
         if (node.nodeType === Node.ELEMENT_NODE) {
-          const submissionResult = node.querySelector?.('span[data-e2e-locator="submission-result"]') ||
-                                   (node.matches?.('span[data-e2e-locator="submission-result"]') ? node : null);
+          const submissionResult = node.querySelector?.(LEETCODE_SELECTORS.SUBMISSION_RESULT) ||
+                                   (node.matches?.(LEETCODE_SELECTORS.SUBMISSION_RESULT) ? node : null);
           if (submissionResult) {
             checkForAcceptedSubmission();
             return;
@@ -198,7 +200,7 @@ new MutationObserver(() => {
 
 // Example: Listen for popup.js request
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "GET_SOLUTION") {
+  if (message.type === MESSAGE_TYPES.GET_SOLUTION) {
     sendResponse({ code: captureSolution() });
   }
 });
