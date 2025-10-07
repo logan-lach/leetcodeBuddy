@@ -26,6 +26,12 @@
       "js": ["js/constants.js", "js/content.js"],
       "css": ["css/modal.css"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["js/monaco-accessor.js"],
+      "matches": ["https://leetcode.com/*"]
+    }
   ]
 }
 
