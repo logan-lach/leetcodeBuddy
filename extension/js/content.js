@@ -3,6 +3,21 @@ console.log("LeetCode Committer content script loaded!");
 
 // Import constants (loaded via manifest.json)
 
+// Inject Monaco accessor script into page context
+(function injectMonacoAccessor() {
+  console.log('[Content Script] Injecting Monaco accessor script');
+  const script = document.createElement('script');
+  script.src = chrome.runtime.getURL('js/monaco-accessor.js');
+  script.onload = function() {
+    console.log('[Content Script] Monaco accessor script loaded');
+    this.remove();
+  };
+  script.onerror = function() {
+    console.error('[Content Script] Failed to load Monaco accessor script');
+  };
+  (document.head || document.documentElement).appendChild(script);
+})();
+
 // Track if we've already processed an acceptance
 let hasProcessedAcceptance = false;
 
@@ -78,19 +93,60 @@ function showAcceptanceModal(code, metadata) {
 
 // Extract code editor content from Monaco editor
 function captureSolution() {
+  return new Promise((resolve) => {
+    console.log('[Content Script] captureSolution() called');
+
+    // Try to get code from Monaco API first
+    const timeout = setTimeout(() => {
+      console.warn("[Content Script] Monaco API timeout, falling back to DOM scraping");
+      resolve(captureSolutionFallback());
+    }, 1000);
+
+    // Set up response listener
+    const responseHandler = (event) => {
+      console.log('[Content Script] Received Monaco code response');
+      clearTimeout(timeout);
+      window.removeEventListener(CUSTOM_EVENTS.MONACO_CODE_RESPONSE, responseHandler);
+
+      const code = event.detail?.code;
+      if (code) {
+        console.log("[Content Script] ✓ Code retrieved from Monaco API, length:", code.length);
+        resolve(code);
+      } else {
+        console.warn("[Content Script] Monaco API returned null, falling back to DOM scraping");
+        resolve(captureSolutionFallback());
+      }
+    };
+
+    window.addEventListener(CUSTOM_EVENTS.MONACO_CODE_RESPONSE, responseHandler);
+
+    // Request code from Monaco accessor
+    console.log('[Content Script] Dispatching GET_MONACO_CODE event');
+    window.dispatchEvent(new CustomEvent(CUSTOM_EVENTS.GET_MONACO_CODE));
+  });
+}
+
+// Fallback method: Extract code from DOM
+function captureSolutionFallback() {
+  console.log('[Content Script] Using fallback DOM scraping method');
+
   // Query for the Monaco editor lines
   const lineNodes = document.querySelectorAll(LEETCODE_SELECTORS.MONACO_LINES);
 
   if (!lineNodes || lineNodes.length === 0) {
-    console.warn("No Monaco lines found");
+    console.warn("[Content Script] No Monaco lines found in DOM");
     return null;
   }
+
+  console.log('[Content Script] Found', lineNodes.length, 'line nodes in DOM');
 
   // Get text content directly from each line (avoids nested span duplication)
   const lines = Array.from(lineNodes).map(line => line.textContent);
 
   // Join with newlines to reconstruct the code
-  return lines.join("\n");
+  const code = lines.join("\n");
+  console.log('[Content Script] DOM scraping complete, code length:', code.length);
+  return code;
 }
 
 // Extract problem metadata
@@ -123,7 +179,7 @@ function extractMetadata() {
 }
 
 // Detect successful submission
-function checkForAcceptedSubmission() {
+async function checkForAcceptedSubmission() {
   // Skip if we've already processed an acceptance
   if (hasProcessedAcceptance) {
     return;
@@ -137,8 +193,8 @@ function checkForAcceptedSubmission() {
     // Mark as processed to prevent duplicate triggers
     hasProcessedAcceptance = true;
 
-    // Capture the code
-    const code = captureSolution();
+    // Capture the code (now returns a Promise)
+    const code = await captureSolution();
 
     if (code) {
       // Extract metadata
@@ -201,7 +257,11 @@ new MutationObserver(() => {
 // Example: Listen for popup.js request
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === MESSAGE_TYPES.GET_SOLUTION) {
-    sendResponse({ code: captureSolution() });
+    // captureSolution is now async, handle it properly
+    captureSolution().then(code => {
+      sendResponse({ code: code });
+    });
+    return true; // Keep the message channel open for async response
   }
 });
 

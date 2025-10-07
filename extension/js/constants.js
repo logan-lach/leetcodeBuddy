@@ -40,3 +40,13 @@ const MESSAGE_TYPES = {
   GET_SOLUTION: 'GET_SOLUTION',
   CAPTURE_CODE: 'CAPTURE_CODE'
 };
+
+// ============================================================================
+// CUSTOM EVENT TYPES (for Monaco accessor communication)
+// ============================================================================
+
+const CUSTOM_EVENTS = {
+  GET_MONACO_CODE: 'LEETCODE_BUDDY_GET_MONACO_CODE',
+  MONACO_CODE_RESPONSE: 'LEETCODE_BUDDY_MONACO_CODE_RESPONSE',
+  MONACO_ACCESSOR_READY: 'LEETCODE_BUDDY_MONACO_ACCESSOR_READY'
+};
