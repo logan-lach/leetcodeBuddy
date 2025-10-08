@@ -4,6 +4,7 @@
   "description": "Capture LeetCode solutions and commit them to a repo.",
   "version": "0.1",
   "permissions": [
+    "identity",
     "activeTab",
     "scripting",
     "storage"
@@ -24,12 +25,6 @@
       "matches": ["https://leetcode.com/*"],
       "js": ["js/constants.js", "js/content.js"],
       "css": ["css/modal.css"]
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["js/monaco-accessor.js"],
-      "matches": ["https://leetcode.com/*"]
     }
   ]
 }

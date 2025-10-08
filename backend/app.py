@@ -15,6 +15,14 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 app.config['GITHUB_CLIENT_ID'] = os.getenv('GITHUB_CLIENT_ID')
 app.config['GITHUB_CLIENT_SECRET'] = os.getenv('GITHUB_CLIENT_SECRET')
 
+# Supabase Configuration
+app.config['SUPABASE_URL'] = os.getenv('SUPABASE_URL')
+app.config['SUPABASE_KEY'] = os.getenv('SUPABASE_KEY')
+
+# Security Configuration
+app.config['ENCRYPTION_KEY'] = os.getenv('ENCRYPTION_KEY')
+app.config['JWT_SECRET'] = os.getenv('JWT_SECRET')
+
 # Import and register routes
 from routes.github_routes import github_bp
 app.register_blueprint(github_bp, url_prefix='/api/github')
