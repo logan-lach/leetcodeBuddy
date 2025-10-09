@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS github_tokens (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     encrypted_token TEXT NOT NULL,
-    token_scopes TEXT[],  -- Array of scopes like ['repo', 'user']
     created_at TIMESTAMP DEFAULT NOW(),
     expires_at TIMESTAMP,  -- GitHub tokens don't expire, but track for rotation
     UNIQUE(user_id)
@@ -56,4 +55,3 @@ COMMENT ON TABLE users IS 'Stores GitHub user information from OAuth';
 COMMENT ON TABLE github_tokens IS 'Stores encrypted GitHub access tokens with AES-256 encryption';
 COMMENT ON TABLE sessions IS 'Optional session tracking (can use stateless JWT instead)';
 COMMENT ON COLUMN github_tokens.encrypted_token IS 'AES-256 encrypted GitHub access token using Fernet';
-COMMENT ON COLUMN github_tokens.token_scopes IS 'OAuth scopes granted for the token (e.g., repo, user)';

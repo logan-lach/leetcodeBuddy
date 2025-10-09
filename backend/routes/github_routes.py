@@ -98,13 +98,10 @@ def authorize():
         encryption_key = current_app.config['ENCRYPTION_KEY']
         encrypted_token = encrypt_token(access_token, encryption_key)
 
-        token_scopes = token_json.get('scope', '').split(',') if token_json.get('scope') else []
-
         # Upsert token (one token per user)
         token_result = supabase.table('github_tokens').upsert({
             'user_id': user_id,
-            'encrypted_token': encrypted_token,
-            'token_scopes': token_scopes
+            'encrypted_token': encrypted_token
         }, on_conflict='user_id').execute()
 
         if not token_result.data:
