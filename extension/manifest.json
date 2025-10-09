@@ -4,6 +4,7 @@
   "description": "Capture LeetCode solutions and commit them to a repo.",
   "version": "0.1",
   "permissions": [
+    "identity",
     "activeTab",
     "scripting",
     "storage"
