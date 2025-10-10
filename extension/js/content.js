@@ -254,6 +254,15 @@ new MutationObserver(() => {
   }
 }).observe(document, { subtree: true, childList: true });
 
+// Close modal when entering/exiting fullscreen to prevent positioning issues
+document.addEventListener('fullscreenchange', () => {
+  const modal = document.getElementById('leetcode-committer-modal');
+  if (modal) {
+    modal.remove();
+    console.log('Modal closed due to fullscreen change');
+  }
+});
+
 // Example: Listen for popup.js request
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === MESSAGE_TYPES.GET_SOLUTION) {
