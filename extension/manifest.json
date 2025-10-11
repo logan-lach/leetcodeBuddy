@@ -9,6 +9,9 @@
     "storage",
     "identity"
   ],
+  "host_permissions": [
+    "https://api.github.com/*"
+  ],
   "background": {
     "service_worker": "js/background.js"
   },

@@ -5,13 +5,26 @@
   <link rel="stylesheet" href="../css/styles.css" />
 </head>
 <body>
-  <div class="container">
+  <!-- Sign-in view (shown when not authenticated) -->
+  <div id="signInView" class="container" style="display: none;">
     <img src="../icons/leetcodeBuddy.png" alt="LeetCode Buddy Logo" class="logo">
     <h1 class="title">LeetCode Buddy</h1>
     <button id="githubSignIn" class="signin-button">
       <img src="../icons/github.png" alt="GitHub" class="github-icon">
       Sign in with GitHub
     </button>
+  </div>
+
+  <!-- Signed-in view (shown when authenticated) -->
+  <div id="signedInView" style="display: none;">
+    <div class="signed-in-container">
+      <div class="status-header">
+        <p class="signed-in-message">Signed in to GitHub</p>
+      </div>
+    </div>
+    <div class="logo-container">
+      <img src="../icons/leetcodeBuddy.png" alt="LeetCode Buddy Logo" class="logo-small">
+    </div>
   </div>
 
   <script src="../js/constants.js"></script>

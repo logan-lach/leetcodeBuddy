@@ -1,13 +1,86 @@
 // GitHub OAuth Configuration
 // TODO: Replace with your GitHub OAuth App Client ID
-const GITHUB_CLIENT_ID = 'YOUR_GITHUB_CLIENT_ID_HERE';
+const GITHUB_CLIENT_ID = 'Ov23li0B5ihAdLrIpijR';
 const REDIRECT_URL = chrome.identity.getRedirectURL();
+
+// Check authentication state on popup load
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("Checking auth state");
+  checkAuthState();
+});
 
 // Sign in with GitHub button handler
 document.getElementById("githubSignIn").addEventListener("click", () => {
   console.log("Sign in with GitHub clicked");
   initiateGitHubOAuth();
 });
+
+/**
+ * Validates if a GitHub token is still valid by making a test API call
+ */
+async function validateGitHubToken(token) {
+  try {
+    const response = await fetch('https://api.github.com/user', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    // If we get 200, token is valid
+    // If we get 401, token is invalid/revoked
+    return response.ok;
+  } catch (error) {
+    console.error('Error validating GitHub token:', error);
+    // On network error, assume token might still be valid
+    // (don't force re-auth due to temporary network issues)
+    return true;
+  }
+}
+
+/**
+ * Checks if user is authenticated and updates UI accordingly
+ */
+async function checkAuthState() {
+  chrome.storage.local.get(['githubToken'], async (result) => {
+    if (result.githubToken) {
+      // Validate token with GitHub API
+      const isValid = await validateGitHubToken(result.githubToken);
+
+      if (isValid) {
+        // Token is valid - show signed-in view
+        console.log(`The current github token is valid! github token: ${result.githubToken}`)
+        showSignedInView();
+      } else {
+        // Token is invalid/revoked - clear it and show sign-in view
+        console.log('GitHub token is invalid or revoked, clearing...');
+        chrome.storage.local.remove(['githubToken'], () => {
+          showSignInView();
+        });
+      }
+    } else {
+      // User is not authenticated - show sign-in view
+      console.log("User is currently not authenticated");
+      showSignInView();
+    }
+  });
+}
+
+/**
+ * Shows the signed-in view and hides the sign-in view
+ */
+function showSignedInView() {
+  document.getElementById('signInView').style.display = 'none';
+  document.getElementById('signedInView').style.display = 'block';
+}
+
+/**
+ * Shows the sign-in view and hides the signed-in view
+ */
+function showSignInView() {
+  document.getElementById('signInView').style.display = 'block';
+  document.getElementById('signedInView').style.display = 'none';
+}
 
 /**
  * Initiates GitHub OAuth flow using chrome.identity.launchWebAuthFlow
@@ -93,9 +166,8 @@ function storeGitHubToken(token) {
     }
 
     console.log('GitHub token stored successfully');
-    alert('Successfully authenticated with GitHub!');
 
-    // Optionally: Update UI to show logged-in state
-    // You could check for stored token on popup load and update button text
+    // Update UI to show signed-in state
+    showSignedInView();
   });
 }

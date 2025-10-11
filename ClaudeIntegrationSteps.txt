@@ -1,0 +1,61 @@
+# LeetCode Buddy GitHub Integration Roadmap
+
+## High-Level Architecture
+
+**Frontend → Your Backend → GitHub API → User's Repo**
+
+## The Roadmap
+
+### 1. GitHub OAuth Setup (30-60 min)
+- Register your app in GitHub Developer Settings to get a Client ID and Secret
+- Implement OAuth flow so users can authorize your app to access their repos
+- Store the access token securely (encrypted in your database) for each user
+
+### 2. Backend API Endpoints (2-3 hours)
+
+You'll need a few key endpoints:
+- `POST /api/github/authorize` - Handle the OAuth callback from GitHub
+- `POST /api/github/push-solution` - Main endpoint that receives code from frontend and pushes to GitHub
+- `GET /api/github/repos` - List user's repos (so they can choose where to push)
+- `POST /api/github/setup-repo` - Optionally create a new repo for LeetCode solutions
+
+### 3. GitHub API Integration (3-4 hours)
+
+Core functionality you'll implement:
+- Use GitHub's REST API to create/update files
+- Handle the commit flow: get file SHA (if exists) → create/update file → commit
+- Organize solutions in a sensible folder structure like `/problems/{problem-name}/solution.{ext}`
+- Consider adding a README that auto-updates with solved problems
+
+### 4. Data to Store (Database Schema)
+
+For each user:
+- GitHub access token (encrypted)
+- Selected repository (name and owner)
+- Preferences (folder structure, commit message format, etc.)
+
+### 5. Error Handling & Edge Cases
+
+Think about:
+- Token expiration and refresh
+- Rate limiting from GitHub API
+- What if the file already exists? (overwrite vs. version)
+- Network failures during push
+
+### 6. Nice-to-Haves
+
+Once core is working:
+- Let users customize commit messages
+- Support for multiple languages (detect from code)
+- Auto-generate README with problem stats
+- Option to make commits appear at the time they solved the problem (using commit dates)
+
+## Tech Stack Suggestions
+
+- **Backend**: Node.js/Express, Python/Flask, or whatever you're comfortable with
+- **GitHub Library**: Octokit (Node.js) or PyGithub (Python) makes things way easier
+- **Database**: PostgreSQL or MongoDB for storing tokens and preferences
+
+## Starting Point
+
+Start with just the OAuth flow and getting a token, then implement a simple "push one file" feature before expanding to the full auto-organization system.
