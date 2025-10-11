@@ -5,6 +5,7 @@ const REDIRECT_URL = chrome.identity.getRedirectURL();
 
 // Check authentication state on popup load
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("Checking auth state");
   checkAuthState();
 });
 
@@ -48,6 +49,7 @@ async function checkAuthState() {
 
       if (isValid) {
         // Token is valid - show signed-in view
+        console.log(`The current github token is valid! github token: ${result.githubToken}`)
         showSignedInView();
       } else {
         // Token is invalid/revoked - clear it and show sign-in view
@@ -58,6 +60,7 @@ async function checkAuthState() {
       }
     } else {
       // User is not authenticated - show sign-in view
+      console.log("User is currently not authenticated");
       showSignInView();
     }
   });

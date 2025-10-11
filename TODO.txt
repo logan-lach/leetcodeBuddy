@@ -1,0 +1,4 @@
+- Add an actual push to github button on our modal
+- Nit: Shouldn't be putting answers in diectories ordered by language. Should be files with {problemnum}.{lang_specific_extension}
+- Add a custom landing page we can serve that will show some basic user staistics
+- TODO: Think of more!
