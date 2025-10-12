@@ -93,3 +93,38 @@
   margin: 0;
   color: #333;
 }
+
+#leetcode-committer-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+#leetcode-committer-github-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #24292e;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#leetcode-committer-github-submit:hover {
+  background: #1a1f24;
+}
+
+#leetcode-committer-github-submit:active {
+  transform: scale(0.98);
+}
+
+#leetcode-committer-github-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}

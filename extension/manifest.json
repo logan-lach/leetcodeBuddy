@@ -32,7 +32,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["js/monaco-accessor.js"],
+      "resources": ["js/monaco-accessor.js", "icons/github.png"],
       "matches": ["https://leetcode.com/*"]
     }
   ]
