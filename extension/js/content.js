@@ -70,6 +70,16 @@ function showAcceptanceModal(code, metadata) {
     </div>
   `;
 
+  // Add GitHub submit button
+  modalHTML += `
+    <div id="leetcode-committer-actions">
+      <button id="leetcode-committer-github-submit">
+        <img src="${chrome.runtime.getURL('icons/github.png')}" alt="GitHub" id="leetcode-committer-github-icon">
+        Submit to GitHub
+      </button>
+    </div>
+  `;
+
   modalContent.innerHTML = modalHTML;
   modalOverlay.appendChild(modalContent);
   document.body.appendChild(modalOverlay);
@@ -80,6 +90,51 @@ function showAcceptanceModal(code, metadata) {
     closeButton.addEventListener('click', (e) => {
       e.stopPropagation();
       modalOverlay.remove();
+    });
+  }
+
+  // Add GitHub submit button functionality
+  const submitButton = document.getElementById('leetcode-committer-github-submit');
+  if (submitButton) {
+    submitButton.addEventListener('click', async (e) => {
+      e.stopPropagation();
+
+      // Disable button and show loading state
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+
+      try {
+        // TODO: Replace with actual backend endpoint
+        const response = await fetch('http://localhost:3000/api/submit-to-github', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            code: code,
+            metadata: metadata
+          })
+        });
+
+        if (response.ok) {
+          submitButton.textContent = '✓ Submitted!';
+          submitButton.style.background = '#2cbb5d';
+          setTimeout(() => {
+            modalOverlay.remove();
+          }, 1500);
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (error) {
+        console.error('GitHub submission error:', error);
+        submitButton.textContent = 'Submission Failed';
+        submitButton.style.background = '#d73a49';
+        setTimeout(() => {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Submit to GitHub';
+          submitButton.style.background = '#24292e';
+        }, 2000);
+      }
     });
   }
 
