@@ -69,9 +69,9 @@ async function checkAuthState() {
         console.log(`The current github token is valid! github token: ${result.githubToken}`)
         showSignedInView();
       } else {
-        // Token is invalid/revoked - clear it and show sign-in view
-        console.log('GitHub token is invalid or revoked, clearing...');
-        chrome.storage.local.remove(['githubToken'], () => {
+        // Token is invalid/revoked - clear all user data and show sign-in view
+        console.log('GitHub token is invalid or revoked, clearing all user data...');
+        chrome.storage.local.remove(['githubToken', 'github_user_id', 'github_username', 'github_repo_url'], () => {
           showSignInView();
         });
       }
