@@ -17,6 +17,7 @@ document.getElementById("githubSignIn").addEventListener("click", () => {
 
 /**
  * Validates if a GitHub token is still valid by making a test API call
+ * TODO: Update this to work with the new backend auth flow
  */
 async function validateGitHubToken(token) {
   try {
@@ -100,7 +101,7 @@ function initiateGitHubOAuth() {
       url: authUrl.toString(),
       interactive: true
     },
-    (redirectUrl) => {
+    async (redirectUrl) => {
       if (chrome.runtime.lastError) {
         console.error('OAuth Error:', chrome.runtime.lastError);
         alert('Failed to authenticate with GitHub: ' + chrome.runtime.lastError.message);
@@ -108,19 +109,60 @@ function initiateGitHubOAuth() {
       }
 
       if (redirectUrl) {
-        // Extract the access token from the redirect URL
-        const token = extractTokenFromUrl(redirectUrl);
+        // Extract the authorization code from the redirect URL
+        const code = extractTokenFromUrl(redirectUrl);
 
-        if (token) {
-          // Store the token in chrome.storage.local
-          storeGitHubToken(token);
+        if (code) {
+          // Exchange the code for an access token via the backend
+          const userData = await exchangeCodeForToken(code);
+
+          if (userData) {
+            // Store the user data in chrome.storage.local
+            storeGitHubToken(userData);
+          } else {
+            console.error('Failed to exchange code for token');
+            alert('Failed to retrieve access token from GitHub');
+          }
         } else {
-          console.error('No token found in redirect URL');
-          alert('Failed to retrieve access token from GitHub');
+          console.error('No authorization code found in redirect URL');
+          alert('Failed to retrieve authorization code from GitHub');
         }
       }
     }
   );
+}
+
+/**
+ * Exchanges the authorization code for an access token via the backend
+ */
+async function exchangeCodeForToken(code) {
+  try {
+    const response = await fetch(`https://leetcode-buddy-backend.vercel.app/api/authorize?code=${code}`);
+
+    if (!response.ok) {
+      // TODO: Style this error message for user-facing display
+      console.error('Failed to exchange code for token:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    console.log(data);
+    if (data.valid && data.access_token) {
+      return {
+        access_token: data.access_token,
+        github_user_id: data.github_user_id,
+        github_username: data.github_username
+      };
+    } else {
+      // TODO: Style this error message for user-facing display
+      console.error('Invalid response from backend:', data);
+      return null;
+    }
+  } catch (error) {
+    // TODO: Style this error message for user-facing display
+    console.error('Error exchanging code for token:', error);
+    return null;
+  }
 }
 
 /**
@@ -155,17 +197,21 @@ function extractTokenFromUrl(url) {
 }
 
 /**
- * Stores the GitHub access token in chrome.storage.local
+ * Stores the GitHub access token and user data in chrome.storage.local
  */
-function storeGitHubToken(token) {
-  chrome.storage.local.set({ githubToken: token }, () => {
+function storeGitHubToken(userData) {
+  chrome.storage.local.set({
+    githubToken: userData.access_token,
+    github_user_id: userData.github_user_id,
+    github_username: userData.github_username
+  }, () => {
     if (chrome.runtime.lastError) {
       console.error('Error storing token:', chrome.runtime.lastError);
       alert('Failed to store GitHub token');
       return;
     }
 
-    console.log('GitHub token stored successfully');
+    console.log('GitHub token and user data stored successfully');
 
     // Update UI to show signed-in state
     showSignedInView();
