@@ -21,6 +21,21 @@
       <div class="status-header">
         <p class="signed-in-message">Signed in to GitHub</p>
       </div>
+
+      <!-- Repo Configuration Section -->
+      <div id="repoConfigSection" class="repo-config-section">
+        <!-- Form shown when repo is not set -->
+        <div id="repoForm" style="display: none;">
+          <p>Please provide the GitHub repository URL where you'd like to post your solutions:</p>
+          <input type="text" id="repoUrlInput" placeholder="https://github.com/username/repo" class="repo-input">
+          <button id="submitRepoBtn" class="submit-repo-button">Submit</button>
+        </div>
+
+        <!-- Display shown when repo is already set -->
+        <div id="repoDisplay" style="display: none;">
+          <p id="repoDisplayText"></p>
+        </div>
+      </div>
     </div>
     <div class="logo-container">
       <img src="../icons/leetcodeBuddy.png" alt="LeetCode Buddy Logo" class="logo-small">

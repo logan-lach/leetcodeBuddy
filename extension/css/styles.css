@@ -104,3 +104,79 @@ body {
   height: 60px;
   filter: drop-shadow(0 0 10px rgba(255, 107, 237, 0.2));
 }
+
+/* Repo configuration section styles */
+.repo-config-section {
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.repo-config-section p {
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.repo-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.repo-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.repo-input:focus {
+  outline: none;
+  border-color: #ff6bed;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 15px rgba(255, 107, 237, 0.3);
+}
+
+.submit-repo-button {
+  background: linear-gradient(135deg, #ffa500 0%, #ff6b6b 50%, #ff6bed 100%);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 237, 0.4);
+  letter-spacing: 0.5px;
+  width: 100%;
+  max-width: 200px;
+}
+
+.submit-repo-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 107, 237, 0.6);
+  filter: brightness(1.1);
+}
+
+.submit-repo-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(255, 107, 237, 0.4);
+}
+
+#repoDisplayText {
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  margin: 0;
+  line-height: 1.5;
+  word-break: break-word;
+}

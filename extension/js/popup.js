@@ -7,6 +7,22 @@ const REDIRECT_URL = chrome.identity.getRedirectURL();
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Checking auth state");
   checkAuthState();
+
+  // Submit repo button handler (only set up listener if button exists)
+  const submitRepoBtn = document.getElementById("submitRepoBtn");
+  if (submitRepoBtn) {
+    submitRepoBtn.addEventListener("click", () => {
+      const repoUrlInput = document.getElementById("repoUrlInput");
+      const repoUrl = repoUrlInput.value.trim();
+
+      if (!repoUrl) {
+        alert('Please enter a valid repository URL');
+        return;
+      }
+
+      setGithubRepo(repoUrl);
+    });
+  }
 });
 
 // Sign in with GitHub button handler
@@ -70,9 +86,20 @@ async function checkAuthState() {
 /**
  * Shows the signed-in view and hides the sign-in view
  */
-function showSignedInView() {
+async function showSignedInView() {
   document.getElementById('signInView').style.display = 'none';
   document.getElementById('signedInView').style.display = 'block';
+
+  // Fetch token data to get github_repo setting
+  const tokenData = await getTokenData();
+
+  if (tokenData && tokenData.github_repo !== undefined) {
+    // Update UI based on whether repo is set
+    updateRepoUI(tokenData.github_repo);
+  } else {
+    // Default to showing the form if we can't fetch data
+    updateRepoUI('');
+  }
 }
 
 /**
@@ -216,4 +243,96 @@ function storeGitHubToken(userData) {
     // Update UI to show signed-in state
     showSignedInView();
   });
+}
+
+/**
+ * Fetches token data from the backend including github_repo setting
+ */
+async function getTokenData() {
+  try {
+    const response = await fetch('https://leetcode-buddy-backend.vercel.app/api/getToken');
+
+    if (!response.ok) {
+      console.error('Failed to get token data:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching token data:', error);
+    return null;
+  }
+}
+
+/**
+ * Sets the GitHub repository URL on the backend
+ */
+async function setGithubRepo(repoUrl) {
+  try {
+    // Get github_user_id from chrome storage
+    const result = await new Promise((resolve) => {
+      chrome.storage.local.get(['github_user_id'], resolve);
+    });
+
+    if (!result.github_user_id) {
+      console.error('No github_user_id found in storage');
+      alert('Failed to set repository: User ID not found');
+      return;
+    }
+
+    const response = await fetch(
+      `https://leetcode-buddy-backend.vercel.app/api/setGithubRepo?github_url=${encodeURIComponent(repoUrl)}&github_user_id=${encodeURIComponent(result.github_user_id)}`,
+      { method: 'POST' }
+    );
+
+    if (!response.ok) {
+      console.error('Failed to set GitHub repo:', response.status);
+      alert('Failed to set repository');
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.success && data.github_repo_url) {
+      // Store github_repo_url to chrome.storage.local
+      chrome.storage.local.set({ github_repo_url: data.github_repo_url }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('Error storing repo URL:', chrome.runtime.lastError);
+          return;
+        }
+
+        console.log('GitHub repo URL stored successfully:', data.github_repo_url);
+
+        // Update UI to show the newly set repo
+        updateRepoUI(data.github_repo_url);
+      });
+    } else {
+      console.error('Invalid response from setGithubRepo:', data);
+      alert('Failed to set repository');
+    }
+  } catch (error) {
+    console.error('Error setting GitHub repo:', error);
+    alert('Failed to set repository');
+  }
+}
+
+/**
+ * Updates the repo configuration UI based on whether a repo is set
+ */
+function updateRepoUI(githubRepo) {
+  const repoForm = document.getElementById('repoForm');
+  const repoDisplay = document.getElementById('repoDisplay');
+  const repoDisplayText = document.getElementById('repoDisplayText');
+
+  if (!githubRepo || githubRepo === '') {
+    // Show form, hide display
+    repoForm.style.display = 'block';
+    repoDisplay.style.display = 'none';
+  } else {
+    // Hide form, show display
+    repoForm.style.display = 'none';
+    repoDisplay.style.display = 'block';
+    repoDisplayText.textContent = `Answers will be posted to this repo: ${githubRepo}`;
+  }
 }
